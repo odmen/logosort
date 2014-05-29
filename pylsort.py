@@ -1,40 +1,63 @@
 __author__ = 'odmen'
 
+import os
 import sys
 import gzip
+import argparse
+import string
+import random
 
-if len(sys.argv) < 2:
-        print('''
--l Полный путь до лог-файла
--d Полный путь до дирректории сохранения логов
--z Файл gz
-''')
-        sys.exit()
+argsparser = argparse.ArgumentParser(description='Сортирует один файл лога по дням')
+argsparser.add_argument("-l", required=True, help='Полный путь до файла лога',type=str)
+argsparser.add_argument("-d", required=True, help='Каталог для сортированных лог-файлов',type=str)
+argsparser.add_argument("-z", required=False, help='Указанный лог файл - .gz', type=int, default=0)
+argsparser.add_argument("-v", required=False, help='Выводить сообщения я выполняемых действиях', type=int, default=0)
+argumens = argsparser.parse_args()
 
-gziped = False
+class LogParser:
 
-for arg in sys.argv:
-    # перебираем аргументы, переданные скрипту
-    currindex = sys.argv.index(arg)
-    # запоминаем индекс текущего выбранного аргумента
-    if arg == "-l":
-        log_file_path = sys.argv[currindex + 1]
-    if arg == "-d":
-        log_dir_path = sys.argv[currindex + 1]
-    if arg == "-z":
-        gziped = True
+    def __init__(self, log_file_path, sorted_logs_path, gzipped):
+        self.log_file_path = log_file_path
+        self.sorted_logs_path = sorted_logs_path
+        self.gzipped = gzipped
+        self.parse_log_file()
 
-if gziped:
-    curr_logfile = gzip.open(log_file_path, 'rb')
-else:
-    curr_logfile = open(log_file_path, 'rb')
-for line in curr_logfile:
-    try:
-        line_date = line.decode('utf-8').split(' ')[3][1:]
-        line_day = line_date.split('/')[0]
-        line_month = line_date.split('/')[1]
-        out_file_name = line_day+'-'+line_month
-        with gzip.open(log_dir_path+'/'+out_file_name+'.log.gz', 'ab') as curr_out_log:
-            curr_out_log.write(line)
-    except:
-        pass
+    def id_generator(self, size=6, chars=string.ascii_uppercase + string.digits):
+        return ''.join(random.choice(chars) for _ in range(size))
+
+    def create_folder(self):
+        interest_folder = self.sorted_logs_path
+        if not os.path.exists(interest_folder):
+            print('Папка '+interest_folder+' не существует. Будет создана')
+            try:
+                os.makedirs(interest_folder)
+                return interest_folder
+            except Exception as inst:
+                print(type(inst))     # the exception instance
+                print(inst.args)      # arguments stored in .args
+                print(inst)           # __str__ allows args to printed directly
+        else:
+            print('Папка '+interest_folder+' существует. Файлы будут записаны в эту папку')
+
+    def parse_log_file(self):
+        self.create_folder()
+        if self.gzipped:
+            curr_logfile = gzip.open(self.log_file_path, 'rb')
+        else:
+            curr_logfile = open(self.log_file_path, 'rb')
+        for line in curr_logfile:
+            try:
+                line = line.decode('utf-8')
+                line_date = line.split(' ')[3][1:]
+                line_day = line_date.split('/')[0]
+                line_month = line_date.split('/')[1]
+                out_file_name = line_day+'-'+line_month
+                with gzip.open(self.sorted_logs_path+'/'+out_file_name+'.log.gz', 'ab') as curr_out_log:
+                    curr_out_log.write(line.encode('utf-8'))
+            except Exception as inst:
+                print(type(inst))     # the exception instance
+                print(inst.args)      # arguments stored in .args
+                print(inst)           # __str__ allows args to printed directly
+
+lparser = LogParser()
+lparser(argumens.l,argumens.d,argumens.z)
