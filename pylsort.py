@@ -33,14 +33,15 @@ class LogParser:
                 os.makedirs(interest_folder)
                 return interest_folder
             except Exception as inst:
-                print(type(inst))     # the exception instance
-                print(inst.args)      # arguments stored in .args
-                print(inst)           # __str__ allows args to printed directly
+                print(type(inst)) # the exception instance
+                print(inst.args) # arguments stored in .args
+                print(inst) # __str__ allows args to printed directly
         else:
             print('Папка '+interest_folder+' существует. Файлы будут записаны в эту папку')
 
     def parse_log_file(self):
         self.create_folder()
+        print(self.log_file_path)
         if self.gzipped:
             curr_logfile = gzip.open(self.log_file_path, 'rb')
         else:
@@ -55,8 +56,9 @@ class LogParser:
                 with gzip.open(self.sorted_logs_path+'/'+out_file_name+'.log.gz', 'ab') as curr_out_log:
                     curr_out_log.write(line.encode('utf-8'))
             except Exception as inst:
-                print(type(inst))     # the exception instance
-                print(inst.args)      # arguments stored in .args
-                print(inst)           # __str__ allows args to printed directly
+                print(type(inst)) # the exception instance
+                print(inst.args) # arguments stored in .args
+                print(inst) # __str__ allows args to printed directly
+                print('Current line: '+line)
 
 LogParser(argumens.l,argumens.d,argumens.z)
