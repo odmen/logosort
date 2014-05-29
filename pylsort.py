@@ -59,5 +59,4 @@ class LogParser:
                 print(inst.args)      # arguments stored in .args
                 print(inst)           # __str__ allows args to printed directly
 
-lparser = LogParser()
-lparser(argumens.l,argumens.d,argumens.z)
+LogParser(argumens.l,argumens.d,argumens.z)
