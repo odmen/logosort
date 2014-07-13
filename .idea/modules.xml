@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/logosort.iml" filepath="$PROJECT_DIR$/.idea/logosort.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/pylsort.iml" filepath="$PROJECT_DIR$/.idea/pylsort.iml" />
     </modules>
   </component>
